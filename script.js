@@ -41,11 +41,11 @@ function detectBrowserLanguage() {
     }
 
     // Если подходящего языка не найдено, возвращаем русский по умолчанию
-    return 'en';
+    return 'ru';
 }
 
 // Current language - определяем автоматически при первом запуске
-let currentLang = 'en';
+let currentLang = 'ru';
 
 // Helper functions for local storage
 function saveSettings() {
@@ -118,8 +118,54 @@ function applyOffset() {
     wrapper.style.transform = `translateY(${offset}px)`;
 }
 
+// Измененная функция для сброса прокрутки
 function resetScroll() {
     offset = (scrollDir() === -1) ? prompter.clientHeight : -textEl.clientHeight;
+    applyOffset();
+}
+
+// Новая функция для сохранения относительной позиции при изменении параметров
+function preserveScrollPosition(callback) {
+    // Вычисляем текущую относительную позицию в процентах
+    const textHeight = textEl.clientHeight;
+    if (textHeight === 0) {
+        callback && callback();
+        return;
+    }
+
+    // Вычисляем, какая часть текста прошла через экран (в процентах)
+    let visibleHeight = prompter.clientHeight;
+    let totalScrollableHeight = textHeight + visibleHeight;
+
+    // Определяем, как много текста уже проскроллено (от 0 до 1)
+    let scrollProgressPercent;
+
+    if (scrollDir() === -1) {
+        // Направление прокрутки снизу вверх
+        scrollProgressPercent = (prompter.clientHeight - offset) / totalScrollableHeight;
+    } else {
+        // Направление прокрутки сверху вниз
+        scrollProgressPercent = (offset + textHeight) / totalScrollableHeight;
+    }
+
+    // Ограничиваем значение между 0 и 1
+    scrollProgressPercent = Math.max(0, Math.min(1, scrollProgressPercent));
+
+    // Выполняем действие, которое меняет размеры
+    callback && callback();
+
+    // После изменения размеров восстанавливаем позицию прокрутки
+    const newTextHeight = textEl.clientHeight;
+    const newTotalScrollableHeight = newTextHeight + prompter.clientHeight;
+
+    if (scrollDir() === -1) {
+        // Направление прокрутки снизу вверх
+        offset = prompter.clientHeight - (scrollProgressPercent * newTotalScrollableHeight);
+    } else {
+        // Направление прокрутки сверху вниз
+        offset = (scrollProgressPercent * newTotalScrollableHeight) - newTextHeight;
+    }
+
     applyOffset();
 }
 
@@ -161,11 +207,12 @@ function setBold(v) {
 }
 
 function cycleMirror() {
-    mirrorState = (mirrorState + 1) & 3;
-    mirrorHToggle.checked = !!(mirrorState & 1);
-    mirrorVToggle.checked = !!(mirrorState & 2);
-    applyMirror();
-    resetScroll();
+    preserveScrollPosition(() => {
+        mirrorState = (mirrorState + 1) & 3;
+        mirrorHToggle.checked = !!(mirrorState & 1);
+        mirrorVToggle.checked = !!(mirrorState & 2);
+        applyMirror();
+    });
     saveSettings();
 }
 
@@ -255,25 +302,32 @@ speedRange.oninput = () => {
 };
 
 fontRange.oninput = () => {
-    textEl.style.fontSize = fontRange.value + 'px';
-    fontVal.textContent = fontRange.value;
-    resetScroll();
+    preserveScrollPosition(() => {
+        textEl.style.fontSize = fontRange.value + 'px';
+        fontVal.textContent = fontRange.value;
+    });
     saveSettings();
 };
 
-boldToggle.onchange = () => setBold(boldToggle.checked);
+boldToggle.onchange = () => {
+    preserveScrollPosition(() => {
+        setBold(boldToggle.checked);
+    });
+};
 
 mirrorHToggle.onchange = () => {
-    mirrorState = (mirrorState & 2) | (mirrorHToggle.checked ? 1 : 0);
-    applyMirror();
-    resetScroll();
+    preserveScrollPosition(() => {
+        mirrorState = (mirrorState & 2) | (mirrorHToggle.checked ? 1 : 0);
+        applyMirror();
+    });
     saveSettings();
 };
 
 mirrorVToggle.onchange = () => {
-    mirrorState = (mirrorState & 1) | (mirrorVToggle.checked ? 2 : 0);
-    applyMirror();
-    resetScroll();
+    preserveScrollPosition(() => {
+        mirrorState = (mirrorState & 1) | (mirrorVToggle.checked ? 2 : 0);
+        applyMirror();
+    });
     saveSettings();
 };
 
@@ -293,6 +347,7 @@ document.getElementById('fileInput').addEventListener('change', e => {
     const r = new FileReader();
     r.onload = () => {
         textEl.textContent = r.result;
+        // При загрузке нового файла мы сбрасываем на начало, так как это новый контент
         resetScroll();
         saveSettings();
     };
@@ -370,14 +425,22 @@ document.addEventListener('keydown', e => {
         case 'Equal':
         case 'NumpadAdd':
             e.preventDefault(); // Предотвращаем изменение масштаба в браузере
-            fontRange.value = Math.min(+fontRange.value + 5, fontRange.max);
-            fontRange.oninput();
+            preserveScrollPosition(() => {
+                fontRange.value = Math.min(+fontRange.value + 5, fontRange.max);
+                textEl.style.fontSize = fontRange.value + 'px';
+                fontVal.textContent = fontRange.value;
+            });
+            saveSettings();
             break;
         case 'Minus':
         case 'NumpadSubtract':
             e.preventDefault(); // Предотвращаем изменение масштаба в браузере
-            fontRange.value = Math.max(+fontRange.value - 5, fontRange.min);
-            fontRange.oninput();
+            preserveScrollPosition(() => {
+                fontRange.value = Math.max(+fontRange.value - 5, fontRange.min);
+                textEl.style.fontSize = fontRange.value + 'px';
+                fontVal.textContent = fontRange.value;
+            });
+            saveSettings();
             break;
         case 'Tab':
             e.preventDefault(); // Уже было, сохраняем
