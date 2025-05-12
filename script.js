@@ -118,9 +118,15 @@ function applyOffset() {
     wrapper.style.transform = `translateY(${offset}px)`;
 }
 
-// Измененная функция для сброса прокрутки
+// Измененная функция для сброса прокрутки с отступом в 2 строки
 function resetScroll() {
+    // Устанавливаем начальную позицию в зависимости от направления прокрутки
     offset = (scrollDir() === -1) ? prompter.clientHeight : -textEl.clientHeight;
+
+    // Добавляем отступ в 2 строки
+    const twoLinesOffset = lineHeight() * 2 * scrollDir();
+    offset += twoLinesOffset;
+
     applyOffset();
 }
 
