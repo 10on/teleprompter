@@ -12,8 +12,10 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+<!-- Иконка для открытия бокового меню -->
 <button id="menuToggle" class="menu-toggle">☰</button>
 
+<!-- Боковая панель управления (справа) -->
 <div id="controls" class="sidebar">
     <div class="sidebar-header">
         <h2 data-i18n="settings">Настройки</h2>
@@ -75,6 +77,21 @@
                 <input type="checkbox" id="mirrorVToggle">
                 <span data-i18n="mirrorV">Вертик. зеркало</span>
             </label>
+        </div>
+
+        <div class="control-group">
+            <label><span data-i18n="textAlign">Выравнивание текста</span>:</label>
+            <div class="align-buttons">
+                <button id="alignLeft" class="align-button" title="По левому краю">
+                    <span class="align-icon">⫷</span>
+                </button>
+                <button id="alignCenter" class="align-button active" title="По центру">
+                    <span class="align-icon">⟺</span>
+                </button>
+                <button id="alignRight" class="align-button" title="По правому краю">
+                    <span class="align-icon">⫸</span>
+                </button>
+            </div>
         </div>
 
         <div class="control-group button-group">

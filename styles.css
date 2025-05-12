@@ -74,6 +74,38 @@ html, body {
     margin-right: 8px;
 }
 
+/* Кнопки выравнивания текста */
+.align-buttons {
+    display: flex;
+    gap: 5px;
+    margin-top: 8px;
+}
+
+.align-button {
+    flex: 1;
+    padding: 6px 0;
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.align-button:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.align-button.active {
+    background: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.5);
+}
+
+.align-icon {
+    font-size: 18px;
+    display: block;
+}
+
 .button-group {
     display: flex;
     flex-direction: column;

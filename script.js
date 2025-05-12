@@ -18,6 +18,15 @@ if (!translations.ru.language) {
     translations.de.language = 'Sprache';
 }
 
+// Добавляем перевод для текста выравнивания
+if (!translations.ru.textAlign) {
+    translations.ru.textAlign = 'Выравнивание текста';
+    translations.en.textAlign = 'Text Alignment';
+    translations.es.textAlign = 'Alineación de texto';
+    translations.fr.textAlign = 'Alignement du texte';
+    translations.de.textAlign = 'Textausrichtung';
+}
+
 // Storage Configuration
 const STORAGE_KEY = 'teleprompterSettings';
 
@@ -56,7 +65,8 @@ function saveSettings() {
             speed: +speedRange.value,
             bold: boldToggle.checked,
             mirror: mirrorState,
-            language: currentLang
+            language: currentLang,
+            textAlign: textEl.style.textAlign || 'center'
         }));
     } catch (e) {
         // Silent fail if localStorage isn't available
@@ -102,6 +112,11 @@ const startStopBtn = document.getElementById('startStopBtn'),
 const hideBtn = document.getElementById('hideBtn'),
     menuToggleBtn = document.getElementById('menuToggle'),
     controls = document.getElementById('controls');
+
+// Кнопки выравнивания текста
+const alignLeftBtn = document.getElementById('alignLeft'),
+    alignCenterBtn = document.getElementById('alignCenter'),
+    alignRightBtn = document.getElementById('alignRight');
 
 // Helper calculations
 const scrollDir = () => (mirrorState & 2) ? 1 : -1;
@@ -173,6 +188,20 @@ function preserveScrollPosition(callback) {
     }
 
     applyOffset();
+}
+
+// Функция для установки выравнивания текста
+function setTextAlign(alignment) {
+    // Обновляем стиль текста
+    textEl.style.textAlign = alignment;
+
+    // Обновляем активную кнопку
+    alignLeftBtn.classList.toggle('active', alignment === 'left');
+    alignCenterBtn.classList.toggle('active', alignment === 'center');
+    alignRightBtn.classList.toggle('active', alignment === 'right');
+
+    // Сохраняем настройки
+    saveSettings();
 }
 
 // Animation Functions
@@ -278,6 +307,13 @@ if (settings.bold === false) {
     setBold(false);
 }
 
+// Применяем сохраненное выравнивание текста или используем центр по умолчанию
+if (settings.textAlign) {
+    setTextAlign(settings.textAlign);
+} else {
+    setTextAlign('center');
+}
+
 speedRange.value = speedLines;
 speedVal.textContent = speedLines;
 applyMirror();
@@ -340,6 +376,11 @@ mirrorVToggle.onchange = () => {
 // Обработчики для нового бокового меню
 menuToggleBtn.onclick = toggleSidebar;
 hideBtn.onclick = toggleSidebar;
+
+// Обработчики для кнопок выравнивания текста
+alignLeftBtn.onclick = () => setTextAlign('left');
+alignCenterBtn.onclick = () => setTextAlign('center');
+alignRightBtn.onclick = () => setTextAlign('right');
 
 startStopBtn.onclick = toggleRun;
 resetBtn.onclick = resetScroll;
