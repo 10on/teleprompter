@@ -1,4 +1,5 @@
-// Import translations
+// Initialize
+setBold(boldToggle.checked);// Import translations
 import translations from './translations.js';
 
 // Storage Configuration
@@ -89,27 +90,27 @@ function step(ts) {
         last = null;
         return;
     }
-    
+
     if (!last) last = ts;
-    
+
     const dt = (ts - last) / 1000;
     last = ts;
-    
+
     offset += scrollDir() * speedLines * lineHeight() * dt;
     applyOffset();
-    
+
     // Reset when text scrolls off screen
     if (scrollDir() === -1 && offset < -textEl.clientHeight) resetScroll();
     if (scrollDir() === 1 && offset > prompter.clientHeight) resetScroll();
-    
+
     requestAnimationFrame(step);
 }
 
 // Control Functions
 function toggleRun() {
     running = !running;
-    startStopBtn.textContent = running 
-        ? translations[currentLang].stop 
+    startStopBtn.textContent = running
+        ? translations[currentLang].stop
         : translations[currentLang].start;
     if (running) requestAnimationFrame(step);
 }
@@ -147,13 +148,13 @@ function toggleFS() {
 // i18n Function
 function applyLanguage(lang) {
     if (!translations[lang]) return;
-    
+
     // Set language
     currentLang = lang;
-    
+
     // Update HTML lang attribute
     document.getElementById('html-root').setAttribute('lang', lang);
-    
+
     // Update all elements with data-i18n attribute
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
@@ -161,14 +162,14 @@ function applyLanguage(lang) {
             el.textContent = translations[lang][key];
         }
     });
-    
+
     // Update button text (special case for start/stop)
     if (startStopBtn) {
-        startStopBtn.textContent = running 
-            ? translations[lang].stop 
+        startStopBtn.textContent = running
+            ? translations[lang].stop
             : translations[lang].start;
     }
-    
+
     // Save selected language
     saveSettings();
 }
@@ -242,7 +243,7 @@ fsBtn.onclick = toggleFS;
 document.getElementById('fileInput').addEventListener('change', e => {
     const f = e.target.files[0];
     if (!f) return;
-    
+
     const r = new FileReader();
     r.onload = () => {
         textEl.textContent = r.result;
@@ -258,19 +259,19 @@ let accelTimer = null, accelFactor = 1;
 
 function handleAccel(code) {
     if (!repeatKeys.has(code)) return;
-    
+
     accelTimer && clearTimeout(accelTimer);
     accelFactor = 1;
-    
+
     accelTimer = setInterval(() => {
         accelFactor = Math.min(accelFactor + 0.2, 5);
-        
+
         if (code === 'ArrowUp') {
             offset -= lineHeight() * accelFactor;
         } else {
             offset += lineHeight() * accelFactor;
         }
-        
+
         applyOffset();
     }, 200);
 }
@@ -284,52 +285,64 @@ function stopAccel() {
 // Key Event Listeners
 document.addEventListener('keydown', e => {
     if (e.repeat && repeatKeys.has(e.code)) return;
-    
+
     switch (e.code) {
         case 'KeyH':
+            e.preventDefault(); // Предотвращаем действие браузера по умолчанию
             toggleUI();
             break;
         case 'Space':
-            e.preventDefault();
+            e.preventDefault(); // Предотвращаем прокрутку страницы при нажатии пробела
             toggleRun();
             break;
         case 'KeyF':
+            e.preventDefault(); // Предотвращаем активацию поиска в Firefox
             toggleFS();
             break;
         case 'ArrowRight':
+            e.preventDefault(); // Предотвращаем прокрутку страницы
             speedRange.value = Math.min(+speedRange.value + 0.1, speedRange.max);
             speedRange.oninput();
             break;
         case 'ArrowLeft':
+            e.preventDefault(); // Предотвращаем прокрутку страницы
             speedRange.value = Math.max(+speedRange.value - 0.1, speedRange.min);
             speedRange.oninput();
             break;
         case 'ArrowUp':
+            e.preventDefault(); // Предотвращаем прокрутку страницы
             offset -= lineHeight();
             applyOffset();
             handleAccel('ArrowUp');
             break;
         case 'ArrowDown':
+            e.preventDefault(); // Предотвращаем прокрутку страницы
             offset += lineHeight();
             applyOffset();
             handleAccel('ArrowDown');
             break;
         case 'Equal':
         case 'NumpadAdd':
+            e.preventDefault(); // Предотвращаем изменение масштаба в браузере
             fontRange.value = Math.min(+fontRange.value + 5, fontRange.max);
             fontRange.oninput();
             break;
         case 'Minus':
         case 'NumpadSubtract':
+            e.preventDefault(); // Предотвращаем изменение масштаба в браузере
             fontRange.value = Math.max(+fontRange.value - 5, fontRange.min);
             fontRange.oninput();
             break;
         case 'Tab':
-            e.preventDefault();
+            e.preventDefault(); // Уже было, сохраняем
             cycleMirror();
             break;
         case 'Enter':
+            e.preventDefault(); // Предотвращаем действие по умолчанию
             resetScroll();
+            break;
+        case 'Slash': // Перехватываем слэш для предотвращения запуска поиска
+            e.preventDefault();
             break;
     }
 });
@@ -341,7 +354,15 @@ document.getElementById('langSelect').addEventListener('change', (e) => {
     applyLanguage(e.target.value);
 });
 
-// Initialize
-setBold(boldToggle.checked);
-window.addEventListener('load', resetScroll);
+// Global focus handling to ensure hotkeys work
+document.body.addEventListener('click', () => {
+    document.body.focus();
+});
+
+// Ensure focus on page load
+window.addEventListener('load', () => {
+    document.body.focus();
+    resetScroll();
+});
+
 window.addEventListener('resize', resetScroll);

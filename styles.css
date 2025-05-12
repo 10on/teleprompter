@@ -7,6 +7,10 @@ html, body {
     height: 100%;
     overflow: hidden;
     font-family: 'Helvetica Neue', Arial, sans-serif;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 /* Controls Panel */
@@ -88,4 +92,8 @@ button {
     font-weight: bold;
     text-align: center;
     will-change: transform;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
 }
