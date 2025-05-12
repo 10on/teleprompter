@@ -1,5 +1,11 @@
+// Import translations
+import translations from './translations.js';
+
 // Storage Configuration
 const STORAGE_KEY = 'teleprompterSettings';
+
+// Current language
+let currentLang = 'ru';
 
 // Helper functions for local storage
 function saveSettings() {
@@ -9,7 +15,8 @@ function saveSettings() {
             font: +fontRange.value,
             speed: +speedRange.value,
             bold: boldToggle.checked,
-            mirror: mirrorState
+            mirror: mirrorState,
+            language: currentLang
         }));
     } catch (e) {
         // Silent fail if localStorage isn't available
@@ -101,7 +108,9 @@ function step(ts) {
 // Control Functions
 function toggleRun() {
     running = !running;
-    startStopBtn.textContent = running ? 'Стоп (Space)' : 'Старт (Space)';
+    startStopBtn.textContent = running 
+        ? translations[currentLang].stop 
+        : translations[currentLang].start;
     if (running) requestAnimationFrame(step);
 }
 
@@ -135,6 +144,35 @@ function toggleFS() {
     }
 }
 
+// i18n Function
+function applyLanguage(lang) {
+    if (!translations[lang]) return;
+    
+    // Set language
+    currentLang = lang;
+    
+    // Update HTML lang attribute
+    document.getElementById('html-root').setAttribute('lang', lang);
+    
+    // Update all elements with data-i18n attribute
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (translations[lang][key]) {
+            el.textContent = translations[lang][key];
+        }
+    });
+    
+    // Update button text (special case for start/stop)
+    if (startStopBtn) {
+        startStopBtn.textContent = running 
+            ? translations[lang].stop 
+            : translations[lang].start;
+    }
+    
+    // Save selected language
+    saveSettings();
+}
+
 // Initialize UI with persisted settings
 if (settings.font) {
     fontRange.value = settings.font;
@@ -154,6 +192,15 @@ applyMirror();
 if (settings.text) {
     textEl.textContent = settings.text;
 }
+
+// Apply saved language or default
+if (settings.language && translations[settings.language]) {
+    currentLang = settings.language;
+    document.getElementById('langSelect').value = currentLang;
+}
+
+// Initialize language
+applyLanguage(currentLang);
 
 // Event Bindings
 speedRange.oninput = () => {
@@ -288,6 +335,11 @@ document.addEventListener('keydown', e => {
 });
 
 document.addEventListener('keyup', stopAccel);
+
+// Language selector event
+document.getElementById('langSelect').addEventListener('change', (e) => {
+    applyLanguage(e.target.value);
+});
 
 // Initialize
 setBold(boldToggle.checked);

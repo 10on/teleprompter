@@ -1,35 +1,49 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" id="html-root">
 <head>
     <meta charset="UTF-8">
     <title>Teleprompter</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="description" content="A lightweight fullscreen web-based teleprompter with offline mode, text mirroring, and scroll control.">
+    <meta name="keywords" content="teleprompter, web teleprompter, fullscreen, offline, mirror text, text scroller, суфлёр, телесуфлёр, телепромптер, браузерный суфлёр">
+    <meta name="author" content="Denis Pushkarev">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <button id="showBtn">⚙️</button>
     <div id="controls">
-        <div style="text-align:right"><button id="hideBtn">✕</button></div>
-        <div><label>Загрузить файл: <input type="file" id="fileInput" accept=".txt"></label></div>
-        <div><label>Скорость (стр/с): <input type="range" id="speedRange" min="0.2" max="5" step="0.1" value="1"></label> <span id="speedVal">1</span></div>
-        <div><label>Размер шрифта: <input type="range" id="fontRange" min="20" max="200" value="60"></label> <span id="fontVal">60</span>px</div>
-        <div><label><input type="checkbox" id="boldToggle" checked> Жирный</label></div>
-        <div><label><input type="checkbox" id="mirrorHToggle"> Гориз. зеркало</label></div>
-        <div><label><input type="checkbox" id="mirrorVToggle"> Вертик. зеркало</label></div>
-        <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">
-            <button id="startStopBtn">Старт (Space)</button>
-            <button id="resetBtn">⟲ В&nbsp;начало (Enter)</button>
-            <button id="fsBtn">⤢ Full&nbsp;(F)</button>
+        <div style="text-align:right;display:flex;justify-content:space-between;">
+            <div class="language-selector">
+                <select id="langSelect">
+                    <option value="ru">Русский</option>
+                    <option value="en">English</option>
+                    <option value="es">Español</option>
+                    <option value="fr">Français</option>
+                    <option value="de">Deutsch</option>
+                </select>
+            </div>
+            <button id="hideBtn">✕</button>
         </div>
-        <div style="font-size:12px;opacity:.7">Space старт/стоп • ←/→ скорость • ↑/↓ сдвиг • ± размер • Tab зеркала • Enter начало • F fullscreen • H UI</div>
+        <div><label><span data-i18n="loadFile">Загрузить файл</span>: <input type="file" id="fileInput" accept=".txt"></label></div>
+        <div><label><span data-i18n="speed">Скорость (стр/с)</span>: <input type="range" id="speedRange" min="0.2" max="5" step="0.1" value="1"></label> <span id="speedVal">1</span></div>
+        <div><label><span data-i18n="fontSize">Размер шрифта</span>: <input type="range" id="fontRange" min="20" max="200" value="60"></label> <span id="fontVal">60</span><span data-i18n="px">px</span></div>
+        <div><label><input type="checkbox" id="boldToggle" checked> <span data-i18n="bold">Жирный</span></label></div>
+        <div><label><input type="checkbox" id="mirrorHToggle"> <span data-i18n="mirrorH">Гориз. зеркало</span></label></div>
+        <div><label><input type="checkbox" id="mirrorVToggle"> <span data-i18n="mirrorV">Вертик. зеркало</span></label></div>
+        <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">
+            <button id="startStopBtn" data-i18n="start">Старт (Space)</button>
+            <button id="resetBtn">⟲ <span data-i18n="reset">В&nbsp;начало (Enter)</span></button>
+            <button id="fsBtn">⤢ <span data-i18n="fullscreen">Full&nbsp;(F)</span></button>
+        </div>
+        <div style="font-size:12px;opacity:.7"><span data-i18n="shortcuts">Space старт/стоп • ←/→ скорость • ↑/↓ сдвиг • ± размер • Tab зеркала • Enter начало • F fullscreen • H UI</span></div>
     </div>
     <div id="prompter">
         <div id="wrapper">
             <div id="text"></div>
         </div>
     </div>
-    <script src="script.js"></script>
+    <script src="script.js" type="module"></script>
 </body>
 </html>
