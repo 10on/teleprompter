@@ -13,47 +13,131 @@ html, body {
     user-select: none;
 }
 
-/* Controls Panel */
-#controls {
+/* Боковая панель с настройками */
+.sidebar {
     position: fixed;
-    top: 10px;
-    left: 10px;
-    background: rgba(0, 0, 0, 0.7);
-    padding: 10px 14px;
-    border-radius: 8px;
+    top: 0;
+    right: 0;
+    width: 280px;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
     z-index: 1000;
-    font-size: 14px;
-    line-height: 1.4;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.5);
+    overflow-y: auto;
 }
 
-#controls input[type=range] {
-    width: 120px;
+.sidebar.open {
+    transform: translateX(0);
 }
 
-#showBtn {
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.sidebar-header h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: normal;
+}
+
+.sidebar-content {
+    padding: 15px;
+}
+
+.control-group {
+    margin-bottom: 20px;
+}
+
+.range-control {
+    display: flex;
+    align-items: center;
+    margin-top: 8px;
+}
+
+.range-control input[type=range] {
+    flex: 1;
+    margin-right: 10px;
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+}
+
+.checkbox-group input[type=checkbox] {
+    margin-right: 8px;
+}
+
+.button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.control-button {
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.control-button:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.shortcuts-info {
+    margin-top: 20px;
+    font-size: 12px;
+    opacity: 0.7;
+    line-height: 1.5;
+}
+
+/* Кнопка переключения меню */
+.menu-toggle {
     position: fixed;
-    top: 10px;
-    left: 10px;
-    z-index: 1000;
+    top: 15px;
+    right: 15px;
+    width: 40px;
+    height: 40px;
     background: rgba(0, 0, 0, 0.7);
     color: #fff;
     border: none;
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
+    border-radius: 4px;
     font-size: 20px;
-    display: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
+    z-index: 999;
+    transition: background 0.2s, transform 0.3s;
 }
 
-/* UI Elements */
-button {
-    cursor: pointer;
+.menu-toggle:hover {
+    background: rgba(0, 0, 0, 0.9);
+}
+
+.menu-toggle.hidden {
+    transform: translateX(-280px);
 }
 
 /* Language Selector */
 .language-selector {
-    margin-bottom: 5px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.language-selector label {
+    margin-right: 10px;
 }
 
 #langSelect {
@@ -61,9 +145,19 @@ button {
     color: #fff;
     border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 4px;
-    padding: 2px 5px;
-    font-size: 12px;
+    padding: 5px 8px;
+    font-size: 14px;
     cursor: pointer;
+}
+
+/* Hide button styling */
+#hideBtn {
+    background: transparent;
+    color: #fff;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 5px;
 }
 
 /* Teleprompter Area */
@@ -96,4 +190,15 @@ button {
     -moz-user-select: text;
     -ms-user-select: text;
     user-select: text;
+}
+
+/* Стили для мобильных устройств */
+@media (max-width: 600px) {
+    .sidebar {
+        width: 100%;
+    }
+
+    .menu-toggle.hidden {
+        transform: translateX(-100%);
+    }
 }

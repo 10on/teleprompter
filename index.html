@@ -12,10 +12,18 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <button id="showBtn">⚙️</button>
-    <div id="controls">
-        <div style="text-align:right;display:flex;justify-content:space-between;">
+<button id="menuToggle" class="menu-toggle">☰</button>
+
+<div id="controls" class="sidebar">
+    <div class="sidebar-header">
+        <h2 data-i18n="settings">Настройки</h2>
+        <button id="hideBtn">✕</button>
+    </div>
+
+    <div class="sidebar-content">
+        <div class="control-group">
             <div class="language-selector">
+                <label for="langSelect"><span data-i18n="language">Язык</span>:</label>
                 <select id="langSelect">
                     <option value="ru">Русский</option>
                     <option value="en">English</option>
@@ -24,26 +32,69 @@
                     <option value="de">Deutsch</option>
                 </select>
             </div>
-            <button id="hideBtn">✕</button>
         </div>
-        <div><label><span data-i18n="loadFile">Загрузить файл</span>: <input type="file" id="fileInput" accept=".txt"></label></div>
-        <div><label><span data-i18n="speed">Скорость (стр/с)</span>: <input type="range" id="speedRange" min="0.2" max="5" step="0.1" value="1"></label> <span id="speedVal">1</span></div>
-        <div><label><span data-i18n="fontSize">Размер шрифта</span>: <input type="range" id="fontRange" min="20" max="200" value="60"></label> <span id="fontVal">60</span><span data-i18n="px">px</span></div>
-        <div><label><input type="checkbox" id="boldToggle" checked> <span data-i18n="bold">Жирный</span></label></div>
-        <div><label><input type="checkbox" id="mirrorHToggle"> <span data-i18n="mirrorH">Гориз. зеркало</span></label></div>
-        <div><label><input type="checkbox" id="mirrorVToggle"> <span data-i18n="mirrorV">Вертик. зеркало</span></label></div>
-        <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">
-            <button id="startStopBtn" data-i18n="start">Старт (Space)</button>
-            <button id="resetBtn">⟲ <span data-i18n="reset">В&nbsp;начало (Enter)</span></button>
-            <button id="fsBtn">⤢ <span data-i18n="fullscreen">Full&nbsp;(F)</span></button>
+
+        <div class="control-group">
+            <label><span data-i18n="loadFile">Загрузить файл</span>:
+                <input type="file" id="fileInput" accept=".txt">
+            </label>
         </div>
-        <div style="font-size:12px;opacity:.7"><span data-i18n="shortcuts">Space старт/стоп • ←/→ скорость • ↑/↓ сдвиг • ± размер • Tab зеркала • Enter начало • F fullscreen • H UI</span></div>
+
+        <div class="control-group">
+            <label><span data-i18n="speed">Скорость (стр/с)</span>:</label>
+            <div class="range-control">
+                <input type="range" id="speedRange" min="0.2" max="5" step="0.1" value="1">
+                <span id="speedVal">1</span>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label><span data-i18n="fontSize">Размер шрифта</span>:</label>
+            <div class="range-control">
+                <input type="range" id="fontRange" min="20" max="200" value="60">
+                <span id="fontVal">60</span><span data-i18n="px">px</span>
+            </div>
+        </div>
+
+        <div class="control-group checkbox-group">
+            <label>
+                <input type="checkbox" id="boldToggle" checked>
+                <span data-i18n="bold">Жирный</span>
+            </label>
+        </div>
+
+        <div class="control-group checkbox-group">
+            <label>
+                <input type="checkbox" id="mirrorHToggle">
+                <span data-i18n="mirrorH">Гориз. зеркало</span>
+            </label>
+        </div>
+
+        <div class="control-group checkbox-group">
+            <label>
+                <input type="checkbox" id="mirrorVToggle">
+                <span data-i18n="mirrorV">Вертик. зеркало</span>
+            </label>
+        </div>
+
+        <div class="control-group button-group">
+            <button id="startStopBtn" class="control-button" data-i18n="start">Старт (Space)</button>
+            <button id="resetBtn" class="control-button">⟲ <span data-i18n="reset">В&nbsp;начало (Enter)</span></button>
+            <button id="fsBtn" class="control-button">⤢ <span data-i18n="fullscreen">Full&nbsp;(F)</span></button>
+        </div>
+
+        <div class="shortcuts-info">
+            <p data-i18n="shortcuts">Space старт/стоп • ←/→ скорость • ↑/↓ сдвиг • ± размер • Tab зеркала • Enter начало • F fullscreen • H UI</p>
+        </div>
     </div>
-    <div id="prompter">
-        <div id="wrapper">
-            <div id="text"></div>
-        </div>
+</div>
+
+<div id="prompter">
+    <div id="wrapper">
+        <div id="text"></div>
     </div>
-    <script src="script.js" type="module"></script>
+</div>
+
+<script src="script.js" type="module"></script>
 </body>
 </html>

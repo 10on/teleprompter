@@ -1,6 +1,22 @@
-// Initialize
-setBold(boldToggle.checked);// Import translations
+// Import translations
 import translations from './translations.js';
+
+// Добавляем перевод для новой кнопки "Настройки"
+if (!translations.ru.settings) {
+    translations.ru.settings = 'Настройки';
+    translations.en.settings = 'Settings';
+    translations.es.settings = 'Ajustes';
+    translations.fr.settings = 'Paramètres';
+    translations.de.settings = 'Einstellungen';
+}
+
+if (!translations.ru.language) {
+    translations.ru.language = 'Язык';
+    translations.en.language = 'Language';
+    translations.es.language = 'Idioma';
+    translations.fr.language = 'Langue';
+    translations.de.language = 'Sprache';
+}
 
 // Storage Configuration
 const STORAGE_KEY = 'teleprompterSettings';
@@ -61,7 +77,7 @@ const startStopBtn = document.getElementById('startStopBtn'),
     fsBtn = document.getElementById('fsBtn');
 
 const hideBtn = document.getElementById('hideBtn'),
-    showBtn = document.getElementById('showBtn'),
+    menuToggleBtn = document.getElementById('menuToggle'),
     controls = document.getElementById('controls');
 
 // Helper calculations
@@ -130,10 +146,10 @@ function cycleMirror() {
     saveSettings();
 }
 
-function toggleUI() {
-    const v = controls.style.display !== 'none';
-    controls.style.display = v ? 'none' : 'block';
-    showBtn.style.display = v ? 'block' : 'none';
+// Функция для открытия/закрытия бокового меню
+function toggleSidebar() {
+    const isOpen = controls.classList.toggle('open');
+    menuToggleBtn.classList.toggle('hidden', isOpen);
 }
 
 function toggleFS() {
@@ -233,8 +249,10 @@ mirrorVToggle.onchange = () => {
     saveSettings();
 };
 
-hideBtn.onclick = toggleUI;
-showBtn.onclick = toggleUI;
+// Обработчики для нового бокового меню
+menuToggleBtn.onclick = toggleSidebar;
+hideBtn.onclick = toggleSidebar;
+
 startStopBtn.onclick = toggleRun;
 resetBtn.onclick = resetScroll;
 fsBtn.onclick = toggleFS;
@@ -289,7 +307,7 @@ document.addEventListener('keydown', e => {
     switch (e.code) {
         case 'KeyH':
             e.preventDefault(); // Предотвращаем действие браузера по умолчанию
-            toggleUI();
+            toggleSidebar();
             break;
         case 'Space':
             e.preventDefault(); // Предотвращаем прокрутку страницы при нажатии пробела
