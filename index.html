@@ -1,104 +1,35 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<title>Teleprompter</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<style>
-html,body{margin:0;padding:0;background:#000;color:#fff;height:100%;overflow:hidden;font-family:'Helvetica Neue',Arial,sans-serif}
-#controls{position:fixed;top:10px;left:10px;background:rgba(0,0,0,.7);padding:10px 14px;border-radius:8px;z-index:1000;font-size:14px;line-height:1.4}
-#controls input[type=range]{width:120px}
-#showBtn{position:fixed;top:10px;left:10px;z-index:1000;background:rgba(0,0,0,.7);color:#fff;border:none;border-radius:50%;width:32px;height:32px;font-size:20px;display:none;cursor:pointer}
-button{cursor:pointer}
-#prompter{position:absolute;top:0;left:0;right:0;bottom:0;overflow:hidden;display:flex;justify-content:center;align-items:flex-start}
-#wrapper{will-change:transform}
-#text{white-space:pre-wrap;max-width:100%;box-sizing:border-box;padding:0 5vw;word-break:break-word;font-weight:bold;text-align:center;will-change:transform}
-</style>
+    <meta charset="UTF-8">
+    <title>Teleprompter</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<button id="showBtn">⚙️</button>
-<div id="controls">
- <div style="text-align:right"><button id="hideBtn">✕</button></div>
- <div><label>Загрузить файл: <input type="file" id="fileInput" accept=".txt"></label></div>
- <div><label>Скорость (стр/с): <input type="range" id="speedRange" min="0.2" max="5" step="0.1" value="1"></label> <span id="speedVal">1</span></div>
- <div><label>Размер шрифта: <input type="range" id="fontRange" min="20" max="200" value="60"></label> <span id="fontVal">60</span>px</div>
- <div><label><input type="checkbox" id="boldToggle" checked> Жирный</label></div>
- <div><label><input type="checkbox" id="mirrorHToggle"> Гориз. зеркало</label></div>
- <div><label><input type="checkbox" id="mirrorVToggle"> Вертик. зеркало</label></div>
- <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">
-   <button id="startStopBtn">Старт (Space)</button>
-   <button id="resetBtn">⟲ В&nbsp;начало (Enter)</button>
-   <button id="fsBtn">⤢ Full&nbsp;(F)</button>
- </div>
- <div style="font-size:12px;opacity:.7">Space старт/стоп • ←/→ скорость • ↑/↓ сдвиг • ± размер • Tab зеркала • Enter начало • F fullscreen • H UI</div>
-</div>
-<div id="prompter"><div id="wrapper"><div id="text"></div></div></div>
-<script>
-// storage helpers (omitted comments)
-const STORAGE_KEY='teleprompterSettings';
-function saveSettings(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify({text:textEl.textContent,font:+fontRange.value,speed:+speedRange.value,bold:boldToggle.checked,mirror:mirrorState}));}catch(e){}}
-function loadSettings(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');}catch(e){return {};}}
-let settings=loadSettings();
-// state & elements
-let speedLines=settings.speed||1,running=false,last=null,offset=0,mirrorState=settings.mirror||0;
-const prompter=document.getElementById('prompter'),wrapper=document.getElementById('wrapper'),textEl=document.getElementById('text');
-const speedRange=document.getElementById('speedRange'),fontRange=document.getElementById('fontRange'),speedVal=document.getElementById('speedVal'),fontVal=document.getElementById('fontVal');
-const boldToggle=document.getElementById('boldToggle'),mirrorHToggle=document.getElementById('mirrorHToggle'),mirrorVToggle=document.getElementById('mirrorVToggle');
-const startStopBtn=document.getElementById('startStopBtn'),resetBtn=document.getElementById('resetBtn'),fsBtn=document.getElementById('fsBtn');
-const hideBtn=document.getElementById('hideBtn'),showBtn=document.getElementById('showBtn'),controls=document.getElementById('controls');
-// calc
-const scrollDir=()=> (mirrorState&2)?1:-1;
-const lineHeight=()=> +fontRange.value;
-// fx
-function applyMirror(){const sx=(mirrorState&1)?-1:1,sy=(mirrorState&2)?-1:1;textEl.style.transform=`scale(${sx},${sy})`;}
-function applyOffset(){wrapper.style.transform=`translateY(${offset}px)`;}
-function resetScroll(){offset=(scrollDir()===-1)?prompter.clientHeight:-textEl.clientHeight;applyOffset();}
-function step(ts){if(!running){last=null;return;}if(!last)last=ts;const dt=(ts-last)/1000;last=ts;offset+=scrollDir()*speedLines*lineHeight()*dt;applyOffset();if(scrollDir()===-1&&offset<-textEl.clientHeight)resetScroll();if(scrollDir()===1&&offset>prompter.clientHeight)resetScroll();requestAnimationFrame(step);} 
-function toggleRun(){running=!running;startStopBtn.textContent=running?'Стоп (Space)':'Старт (Space)';if(running)requestAnimationFrame(step);} 
-function setBold(v){textEl.style.fontWeight=v?'bold':'normal';boldToggle.checked=v;saveSettings();}
-function cycleMirror(){mirrorState=(mirrorState+1)&3;mirrorHToggle.checked=!!(mirrorState&1);mirrorVToggle.checked=!!(mirrorState&2);applyMirror();resetScroll();saveSettings();}
-function toggleUI(){const v=controls.style.display!=='none';controls.style.display=v?'none':'block';showBtn.style.display=v?'block':'none';}
-function toggleFS(){const doc=document; if(!doc.fullscreenElement&&!(doc.webkitFullscreenElement)){(doc.documentElement.requestFullscreen||doc.documentElement.webkitRequestFullscreen).call(doc.documentElement);}else{(doc.exitFullscreen||doc.webkitExitFullscreen).call(doc);} }
-// init persisted
-if(settings.font){fontRange.value=settings.font;fontVal.textContent=settings.font;textEl.style.fontSize=settings.font+'px';}
-if(settings.bold===false){boldToggle.checked=false;setBold(false);} 
-speedRange.value=speedLines;speedVal.textContent=speedLines;applyMirror();if(settings.text){textEl.textContent=settings.text;}
-// bindings
-speedRange.oninput=()=>{speedLines=+speedRange.value;speedVal.textContent=speedLines;saveSettings();};
-fontRange.oninput=()=>{textEl.style.fontSize=fontRange.value+'px';fontVal.textContent=fontRange.value;resetScroll();saveSettings();};
-boldToggle.onchange=()=>setBold(boldToggle.checked);
-mirrorHToggle.onchange=()=>{mirrorState=(mirrorState&2)|(mirrorHToggle.checked?1:0);applyMirror();resetScroll();saveSettings();};
-mirrorVToggle.onchange=()=>{mirrorState=(mirrorState&1)|(mirrorVToggle.checked?2:0);applyMirror();resetScroll();saveSettings();};
-hideBtn.onclick=toggleUI;showBtn.onclick=toggleUI;startStopBtn.onclick=toggleRun;resetBtn.onclick=resetScroll;fsBtn.onclick=toggleFS;
-document.getElementById('fileInput').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{textEl.textContent=r.result;resetScroll();saveSettings();};r.readAsText(f,'utf-8');});
-// keyboard
-const repeatKeys=new Set(['ArrowUp','ArrowDown']);let accelTimer=null,accelFactor=1;
-function handleAccel(code){if(!repeatKeys.has(code))return;accelTimer&&clearTimeout(accelTimer);accelFactor=1;accelTimer=setInterval(()=>{accelFactor=Math.min(accelFactor+0.2,5);if(code==='ArrowUp'){offset-=lineHeight()*accelFactor;}else{offset+=lineHeight()*accelFactor;}applyOffset();},200);} 
-function stopAccel(){accelTimer&&clearInterval(accelTimer);accelFactor=1;accelTimer=null;}
-
-document.addEventListener('keydown',e=>{
- if(e.repeat&&repeatKeys.has(e.code))return;
- switch(e.code){
-  case'KeyH':toggleUI();break;
-  case'Space':e.preventDefault();toggleRun();break;
-  case'KeyF':toggleFS();break;
-  case'ArrowRight':speedRange.value=Math.min(+speedRange.value+0.1,speedRange.max);speedRange.oninput();break;
-  case'ArrowLeft':speedRange.value=Math.max(+speedRange.value-0.1,speedRange.min);speedRange.oninput();break;
-  case'ArrowUp':offset-=lineHeight();applyOffset();handleAccel('ArrowUp');break;
-  case'ArrowDown':offset+=lineHeight();applyOffset();handleAccel('ArrowDown');break;
-  case'Equal':case'NumpadAdd':fontRange.value=Math.min(+fontRange.value+5,fontRange.max);fontRange.oninput();break;
-  case'Minus':case'NumpadSubtract':fontRange.value=Math.max(+fontRange.value-5,fontRange.min);fontRange.oninput();break;
-  case'Tab':e.preventDefault();cycleMirror();break;
-  case'Enter':resetScroll();break;
- }
-});
-document.addEventListener('keyup',stopAccel);
-// first render
-setBold(boldToggle.checked);
-window.addEventListener('load',resetScroll);
-window.addEventListener('resize',resetScroll);
-</script>
+    <button id="showBtn">⚙️</button>
+    <div id="controls">
+        <div style="text-align:right"><button id="hideBtn">✕</button></div>
+        <div><label>Загрузить файл: <input type="file" id="fileInput" accept=".txt"></label></div>
+        <div><label>Скорость (стр/с): <input type="range" id="speedRange" min="0.2" max="5" step="0.1" value="1"></label> <span id="speedVal">1</span></div>
+        <div><label>Размер шрифта: <input type="range" id="fontRange" min="20" max="200" value="60"></label> <span id="fontVal">60</span>px</div>
+        <div><label><input type="checkbox" id="boldToggle" checked> Жирный</label></div>
+        <div><label><input type="checkbox" id="mirrorHToggle"> Гориз. зеркало</label></div>
+        <div><label><input type="checkbox" id="mirrorVToggle"> Вертик. зеркало</label></div>
+        <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">
+            <button id="startStopBtn">Старт (Space)</button>
+            <button id="resetBtn">⟲ В&nbsp;начало (Enter)</button>
+            <button id="fsBtn">⤢ Full&nbsp;(F)</button>
+        </div>
+        <div style="font-size:12px;opacity:.7">Space старт/стоп • ←/→ скорость • ↑/↓ сдвиг • ± размер • Tab зеркала • Enter начало • F fullscreen • H UI</div>
+    </div>
+    <div id="prompter">
+        <div id="wrapper">
+            <div id="text"></div>
+        </div>
+    </div>
+    <script src="script.js"></script>
 </body>
 </html>
