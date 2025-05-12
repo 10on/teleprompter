@@ -21,8 +21,31 @@ if (!translations.ru.language) {
 // Storage Configuration
 const STORAGE_KEY = 'teleprompterSettings';
 
-// Current language
-let currentLang = 'ru';
+// Определение языка браузера и поиск ближайшего поддерживаемого языка
+function detectBrowserLanguage() {
+    // Поддерживаемые языки
+    const supportedLanguages = ['ru', 'en', 'es', 'fr', 'de'];
+
+    // Получаем язык браузера (navigator.languages более предпочтителен, т.к. содержит массив языков по приоритету)
+    const browserLanguages = navigator.languages || [navigator.language || navigator.userLanguage];
+
+    // Перебираем языки из настроек браузера
+    for (let lang of browserLanguages) {
+        // Обрезаем язык до 2 символов (например, 'ru-RU' -> 'ru')
+        const shortLang = lang.substring(0, 2).toLowerCase();
+
+        // Если язык поддерживается, возвращаем его
+        if (supportedLanguages.includes(shortLang)) {
+            return shortLang;
+        }
+    }
+
+    // Если подходящего языка не найдено, возвращаем русский по умолчанию
+    return 'en';
+}
+
+// Current language - определяем автоматически при первом запуске
+let currentLang = 'en';
 
 // Helper functions for local storage
 function saveSettings() {
@@ -210,11 +233,16 @@ if (settings.text) {
     textEl.textContent = settings.text;
 }
 
-// Apply saved language or default
+// Apply saved language or use browser language if not set
 if (settings.language && translations[settings.language]) {
     currentLang = settings.language;
-    document.getElementById('langSelect').value = currentLang;
+} else {
+    // Используем определение языка браузера только при первом запуске
+    currentLang = detectBrowserLanguage();
 }
+
+// Устанавливаем значение селектора языка
+document.getElementById('langSelect').value = currentLang;
 
 // Initialize language
 applyLanguage(currentLang);
