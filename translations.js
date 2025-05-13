@@ -13,9 +13,12 @@ const translations = {
         reset: 'В начало (Enter)',
         fullscreen: 'Full (F)',
         shortcuts: 'Space старт/стоп • ←/→ скорость • ↑/↓ сдвиг • ± размер • Tab зеркала • Enter начало • F fullscreen • H UI',
-        px: 'px'
+        px: 'px',
+        textAlign: 'Выравнивание текста',
+        settings: 'Настройки',
+        language: 'Язык'
     },
-    
+
     // English
     'en': {
         loadFile: 'Load File',
@@ -29,9 +32,12 @@ const translations = {
         reset: 'Reset (Enter)',
         fullscreen: 'Full (F)',
         shortcuts: 'Space start/stop • ←/→ speed • ↑/↓ scroll • ± font size • Tab mirror • Enter reset • F fullscreen • H UI',
-        px: 'px'
+        px: 'px',
+        textAlign: 'Text Alignment',
+        settings: 'Settings',
+        language: 'Language'
     },
-    
+
     // Español
     'es': {
         loadFile: 'Cargar archivo',
@@ -45,9 +51,12 @@ const translations = {
         reset: 'Reiniciar (Enter)',
         fullscreen: 'Completo (F)',
         shortcuts: 'Espacio inicio/parar • ←/→ velocidad • ↑/↓ desplazar • ± tamaño • Tab espejo • Enter reinicio • F pantalla • H UI',
-        px: 'px'
+        px: 'px',
+        textAlign: 'Alineación de texto',
+        settings: 'Ajustes',
+        language: 'Idioma'
     },
-    
+
     // Français
     'fr': {
         loadFile: 'Charger fichier',
@@ -61,9 +70,12 @@ const translations = {
         reset: 'Réinitialiser (Entrée)',
         fullscreen: 'Plein écran (F)',
         shortcuts: 'Espace démarrer/arrêter • ←/→ vitesse • ↑/↓ défiler • ± taille • Tab miroir • Entrée reset • F plein écran • H UI',
-        px: 'px'
+        px: 'px',
+        textAlign: 'Alignement du texte',
+        settings: 'Paramètres',
+        language: 'Langue'
     },
-    
+
     // Deutsche
     'de': {
         loadFile: 'Datei laden',
@@ -77,7 +89,10 @@ const translations = {
         reset: 'Zurücksetzen (Enter)',
         fullscreen: 'Vollbild (F)',
         shortcuts: 'Leertaste start/stopp • ←/→ geschwindigkeit • ↑/↓ scrollen • ± größe • Tab spiegel • Enter reset • F vollbild • H UI',
-        px: 'px'
+        px: 'px',
+        textAlign: 'Textausrichtung',
+        settings: 'Einstellungen',
+        language: 'Sprache'
     }
 };
 
