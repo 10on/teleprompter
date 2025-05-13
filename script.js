@@ -3,6 +3,7 @@ import translations from './translations.js';
 import { loadSettings, saveSettings, applyLanguage, detectBrowserLanguage } from './storage.js';
 import { createAnimationManager } from './animation.js';
 import { createControlsManager } from './controls.js';
+import createVAD from './vad.js';
 
 // Загружаем сохраненные настройки или используем значения по умолчанию
 const settings = loadSettings();
@@ -148,5 +149,43 @@ function initApp() {
     animationManager.resetScroll();
 }
 
-// Запускаем приложение при загрузке страницы
-window.addEventListener('load', initApp);
+function setupVoiceControl() {
+    const checkbox = document.getElementById('voiceControlToggle');
+    if (!checkbox) return;
+
+    let stream, vad;
+
+    checkbox.addEventListener('change', async () => {
+        if (checkbox.checked) {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                const ctx = new AudioContext();
+
+                vad = createVAD(ctx, stream, {
+                    bufferLen: 512,        // меньше буфер → чаще обновления
+                    fftSize: 512,
+                    smoothingTimeConstant: 0.1,
+                    noiseCaptureDuration: 500,
+                    activityCounterThresh: 2,  // реакция ≈ 2×512/48k ≈ 22 мс
+                    onVoiceStart() {
+                        if (!state.running) animationManager.toggleRun(translations, state.currentLang);
+                    },
+                    onVoiceStop() {
+                        if (state.running) animationManager.toggleRun(translations, state.currentLang);
+                    }
+                });
+            } catch (e) {
+                console.error('VAD error', e);
+                checkbox.checked = false;
+            }
+        } else {
+            vad?.destroy();
+            stream?.getTracks().forEach(t => t.stop());
+        }
+    });
+}
+
+window.addEventListener('load', () => {
+    initApp();
+    setupVoiceControl(); // ← подключаем при загрузке
+});
