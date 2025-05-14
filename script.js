@@ -153,12 +153,21 @@ function setupVoiceControl() {
     const checkbox = document.getElementById('voiceControlToggle');
     if (!checkbox) return;
 
-    let stream, vad;
+    let streamPromise = null;
+    let audioCtx = null;
+    let vad = null;
+
+    async function getAudioStream() {
+        if (!streamPromise) {
+            streamPromise = navigator.mediaDevices.getUserMedia({ audio: true });
+        }
+        return streamPromise;
+    }
 
     document.addEventListener('keydown', (e) => {
-        const isBareCtrl = (e.code === 'ControlLeft' || e.code === 'ControlRight')
+        const bareCtrl = (e.code === 'ControlLeft' || e.code === 'ControlRight')
             && !e.shiftKey && !e.altKey && !e.metaKey;
-        if (isBareCtrl) {
+        if (bareCtrl) {
             checkbox.checked = !checkbox.checked;
             checkbox.dispatchEvent(new Event('change'));
             e.preventDefault();
@@ -168,15 +177,20 @@ function setupVoiceControl() {
     checkbox.addEventListener('change', async () => {
         if (checkbox.checked) {
             try {
-                stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                const ctx = new AudioContext();
+                const stream = await getAudioStream();        // ← повторного запроса не будет
+                // если аудиоконтекст уже был, просто resume
+                if (!audioCtx || audioCtx.state === 'closed') {
+                    audioCtx = new AudioContext();
+                } else if (audioCtx.state === 'suspended') {
+                    await audioCtx.resume();
+                }
 
-                vad = createVAD(ctx, stream, {
-                    bufferLen: 512,        // меньше буфер → чаще обновления
+                vad = createVAD(audioCtx, stream, {
+                    bufferLen: 512,
                     fftSize: 512,
                     smoothingTimeConstant: 0.1,
                     noiseCaptureDuration: 500,
-                    activityCounterThresh: 2,  // реакция ≈ 2×512/48k ≈ 22 мс
+                    activityCounterThresh: 2,
                     onVoiceStart() {
                         if (!state.running) animationManager.toggleRun(translations, state.currentLang);
                     },
@@ -184,18 +198,27 @@ function setupVoiceControl() {
                         if (state.running) animationManager.toggleRun(translations, state.currentLang);
                     }
                 });
+
+                stream.getAudioTracks().forEach(t => t.enabled = true);
+
             } catch (e) {
                 console.error('VAD error', e);
                 checkbox.checked = false;
             }
         } else {
             vad?.destroy();
-            stream?.getTracks().forEach(t => t.stop());
+            vad = null;
+
+            streamPromise?.then(stream => {
+                stream.getAudioTracks().forEach(t => t.enabled = false);
+            });
+
+            audioCtx?.suspend();
         }
     });
 }
 
 window.addEventListener('load', () => {
     initApp();
-    setupVoiceControl(); // ← подключаем при загрузке
+    setupVoiceControl();
 });
