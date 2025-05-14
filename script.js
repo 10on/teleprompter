@@ -155,6 +155,16 @@ function setupVoiceControl() {
 
     let stream, vad;
 
+    document.addEventListener('keydown', (e) => {
+        const isBareCtrl = (e.code === 'ControlLeft' || e.code === 'ControlRight')
+            && !e.shiftKey && !e.altKey && !e.metaKey;
+        if (isBareCtrl) {
+            checkbox.checked = !checkbox.checked;
+            checkbox.dispatchEvent(new Event('change'));
+            e.preventDefault();
+        }
+    });
+
     checkbox.addEventListener('change', async () => {
         if (checkbox.checked) {
             try {
