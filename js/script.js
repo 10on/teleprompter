@@ -1,9 +1,9 @@
 // Основной модуль телепромптера
-import translations from './translations.js';
-import { loadSettings, saveSettings, applyLanguage, detectBrowserLanguage } from './storage.js';
-import { createAnimationManager } from './animation.js';
-import { createControlsManager } from './controls.js';
-import createVAD from './vad.js';
+import { translations, applyLanguage } from './i18n/i18n-manager.js';
+import { loadSettings, saveSettings, detectBrowserLanguage } from './core/storage.js';
+import { createAnimationManager } from './core/animation.js';
+import { createControlsManager } from './ui/controls.js';
+import createVAD from './features/vad.js';
 
 // Загружаем сохраненные настройки или используем значения по умолчанию
 const settings = loadSettings();

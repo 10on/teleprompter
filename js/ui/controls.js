@@ -1,6 +1,6 @@
 // Модуль управления элементами интерфейса телепромптера
-import translations from './translations.js';
-import { saveSettings } from './storage.js';
+import { translations } from '../i18n/i18n-manager.js';
+import { saveSettings } from '../core/storage.js';
 
 export function createControlsManager(elements, state, animationManager) {
     // Функция для применения зеркального отображения текста
