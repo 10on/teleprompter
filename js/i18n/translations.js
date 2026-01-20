@@ -2,7 +2,7 @@
 const translations = {
     // Русский (базовый)
     'ru': {
-        welcome: 'Добро пожаловать!<br>Это телепромптер.<br><small>Настройки в правом верхнем углу ☰</small>',
+        welcome: '<small>Нажми пробел, чтобы начать</small><br><br>Добро пожаловать!<br>Это телепромптер.<br><small>Настройки в правом верхнем углу ☰</small><br><br><small>Нажми пробел, чтобы остановиться</small>',
         loadFile: 'Загрузить файл',
         speed: 'Скорость (стр/с)',
         fontSize: 'Размер шрифта',
@@ -23,7 +23,7 @@ const translations = {
 
     // English
     'en': {
-        welcome: 'Welcome!<br>This is a teleprompter.<br><small>Settings in the top right corner ☰</small>',
+        welcome: '<small>Press space to start</small><br><br>Welcome!<br>This is a teleprompter.<br><small>Settings in the top right corner ☰</small><br><br><small>Press space to stop</small>',
         loadFile: 'Load File',
         speed: 'Speed (lines/s)',
         fontSize: 'Font Size',
@@ -44,7 +44,7 @@ const translations = {
 
     // Español
     'es': {
-        welcome: '¡Bienvenido!<br>Esto es un teleprompter.<br><small>Ajustes en la esquina superior derecha ☰</small>',
+        welcome: '<small>Pulsa espacio para empezar</small><br><br>¡Bienvenido!<br>Esto es un teleprompter.<br><small>Ajustes en la esquina superior derecha ☰</small><br><br><small>Pulsa espacio para parar</small>',
         loadFile: 'Cargar archivo',
         speed: 'Velocidad (l/s)',
         fontSize: 'Tamaño de fuente',
@@ -65,7 +65,7 @@ const translations = {
 
     // Français
     'fr': {
-        welcome: 'Bienvenue!<br>Ceci est un téléprompteur.<br><small>Paramètres en haut à droite ☰</small>',
+        welcome: '<small>Appuyez sur espace pour démarrer</small><br><br>Bienvenue!<br>Ceci est un téléprompteur.<br><small>Paramètres en haut à droite ☰</small><br><br><small>Appuyez sur espace pour arrêter</small>',
         loadFile: 'Charger fichier',
         speed: 'Vitesse (l/s)',
         fontSize: 'Taille police',
@@ -86,7 +86,7 @@ const translations = {
 
     // Deutsche
     'de': {
-        welcome: 'Willkommen!<br>Dies ist ein Teleprompter.<br><small>Einstellungen oben rechts ☰</small>',
+        welcome: '<small>Leertaste drücken zum Starten</small><br><br>Willkommen!<br>Dies ist ein Teleprompter.<br><small>Einstellungen oben rechts ☰</small><br><br><small>Leertaste drücken zum Stoppen</small>',
         loadFile: 'Datei laden',
         speed: 'Geschwindigkeit (Z/s)',
         fontSize: 'Schriftgröße',
