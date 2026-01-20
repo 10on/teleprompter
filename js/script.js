@@ -14,7 +14,8 @@ const state = {
     running: false,
     offset: 0,
     mirrorState: settings.mirror || 0,
-    currentLang: settings.language || detectBrowserLanguage()
+    currentLang: settings.language || detectBrowserLanguage(),
+    userTextLoaded: !!settings.text
 };
 
 // DOM-элементы
@@ -79,6 +80,8 @@ function initializeUI() {
 
     if (settings.text) {
         elements.textEl.textContent = settings.text;
+    } else {
+        elements.textEl.innerHTML = translations[state.currentLang].welcome;
     }
 
     // Устанавливаем значение селектора языка
@@ -124,6 +127,11 @@ function bindEventListeners() {
     elements.langSelect.addEventListener('change', (e) => {
         state.currentLang = e.target.value;
         applyLanguage(state.currentLang, elements, state.running);
+
+        // Обновляем приветствие, если текст не был загружен пользователем
+        if (!state.userTextLoaded) {
+            elements.textEl.innerHTML = translations[state.currentLang].welcome;
+        }
 
         // Сохраняем настройки
         const settings = controlsManager.createSettingsSnapshot();

@@ -73,6 +73,7 @@ export function createControlsManager(elements, state, animationManager) {
         const r = new FileReader();
         r.onload = () => {
             elements.textEl.textContent = r.result;
+            state.userTextLoaded = true;
             // При загрузке нового файла мы сбрасываем на начало, так как это новый контент
             animationManager.resetScroll();
 
